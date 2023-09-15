@@ -2,19 +2,20 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import spotifyImage from "./../../public/spotify.png";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { useRouter } from "next/navigation";
+
+const clientId = "7de5348da8994d779c49e165017c1083";
+const redirectUrl = "http://localhost:3000/search";
 
 export default function Home() {
-  async function getSpotifyToken() {
-    const sdk = SpotifyApi.withUserAuthorization(clientId, redirectUri);
-    console.log(sdk.authenticate());
-    console.log(await sdk.currentUser.unfollowArtistsOrUsers));
-  }
+  //Remove routes and try to make it an SPA
+
+  const router = useRouter();
 
   return (
     <div className={`${styles.homeWrapper}`}>
       <Image
-        onClick={getSpotifyToken}
+        onClick={() => router.push("/search")}
         className={`${styles.spotifyLogo}`}
         src={spotifyImage}
         alt="Spotify Image"
