@@ -1,0 +1,10 @@
+.searchContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.playListCard {
+  display: flex;
+  flex-direction: row;
+}

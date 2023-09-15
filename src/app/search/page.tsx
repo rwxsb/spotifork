@@ -1,13 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useSpotify } from "./../hooks/useSpotify";
-import {
-  UserProfile,
-  ItemTypes,
-  PartialSearchResult,
-} from "@spotify/web-api-ts-sdk";
+import { UserProfile, PartialSearchResult } from "@spotify/web-api-ts-sdk";
 import { useRouter } from "next/navigation";
 import { PlaylistCard } from "./PlaylistCard";
+import styles from "./page.module.css";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 const redirectUrl = "http://localhost:3000/search";
@@ -27,9 +24,10 @@ export default function Playlists() {
   });
 
   async function searchPlaylists(query: string) {
-    const playLists = await sdk?.search(query, ["playlist"]);
-    console.log(playLists);
-    setQueryResult(playLists);
+    if (query) {
+      const playLists = await sdk?.search(query, ["playlist"]);
+      setQueryResult(playLists);
+    }
   }
 
   return (
@@ -39,9 +37,15 @@ export default function Playlists() {
         type="text"
         onChange={(e) => searchPlaylists(e.currentTarget.value)}
       />
-      {queryResult?.playlists?.items.map((item, index) => (
-        <PlaylistCard key={index} name={item.name} href={item.images[0].url} />
-      ))}
+      <div className={`${styles.searchContainer}`}>
+        {queryResult?.playlists?.items.map((item, index) => (
+          <PlaylistCard
+            key={index}
+            name={item.name}
+            href={item.images[0].url}
+          />
+        ))}
+      </div>
     </div>
   );
 }
