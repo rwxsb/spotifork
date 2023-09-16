@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 export function useSpotify(
   clientId: string,
   redirectUrl: string,
+  scopes?: string[],
 ): SpotifyApi | null {
   const [sdk, setSdk] = useState<SpotifyApi | null>(null);
 
@@ -13,6 +14,7 @@ export function useSpotify(
       const internalSdk = SpotifyApi.withUserAuthorization(
         clientId,
         redirectUrl,
+        scopes,
       );
 
       try {
@@ -36,7 +38,7 @@ export function useSpotify(
         }
       }
     })();
-  }, [clientId, redirectUrl]);
+  }, [clientId, redirectUrl, scopes]);
 
   return sdk;
 }

@@ -41,8 +41,12 @@ export default function Playlists() {
         {queryResult?.playlists?.items.map((item, index) => (
           <PlaylistCard
             key={index}
+            playListId={item.id}
             name={item.name}
             href={item.images[0].url}
+            description={item.description}
+            author={item.owner.display_name}
+            userId={profile.id}
           />
         ))}
       </div>

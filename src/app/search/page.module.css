@@ -5,6 +5,20 @@
 }
 
 .playListCard {
-  display: flex;
-  flex-direction: row;
+  border-radius: 10px;
+  border: 1px solid;
+  border-color: black;
+  padding: 1em;
+  margin: 1em 3em;
+  display: grid;
+  grid-template-columns: 2fr 12fr 2fr;
+  gap: 10px;
+}
+
+.forkButton {
+  width: 5em;
+  height: 5em;
+  border-radius: 50%;
+  border: 2px solid green;
+  padding: 5px;
 }
