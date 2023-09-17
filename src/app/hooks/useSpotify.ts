@@ -1,5 +1,5 @@
 "use client";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { SpotifyApi, UserProfile } from "@spotify/web-api-ts-sdk";
 import { useState, useEffect } from "react";
 
 export function useSpotify(
@@ -8,6 +8,7 @@ export function useSpotify(
   scopes?: string[],
 ): SpotifyApi | null {
   const [sdk, setSdk] = useState<SpotifyApi | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     (async () => {

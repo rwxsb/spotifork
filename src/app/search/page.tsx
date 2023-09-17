@@ -12,25 +12,46 @@ const redirectUrl = "http://localhost:3000/search";
 
 export default function Playlists() {
   const router = useRouter();
-  const sdk = useSpotify(clientId, redirectUrl, ["playlist-modify-public"]);
-  const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
+  //To distribute the sdk we should use Redux or Other Context API
+  const sdk = useSpotify(clientId, redirectUrl, [
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "playlist-modify-private",
+    "playlist-modify-public",
+  ]);
   const [queryResult, setQueryResult] =
     useState<Pick<PartialSearchResult, "playlists">>();
-
-  useEffect(() => {
-    sdk?.currentUser.profile().then((res) => setProfile(res));
-  }, [sdk?.currentUser]);
+  const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
 
   async function logOut() {
     router.push("/");
     sdk?.logOut();
   }
 
+  useEffect(() => {
+    async function getCurrentUser() {
+      console.log(sdk);
+      const currentUser =
+        (await sdk?.currentUser.profile()) || ({} as UserProfile);
+      setProfile(currentUser);
+    }
+
+    if (sdk) {
+      getCurrentUser();
+    } else {
+      console.error("SDK is not initialized");
+    }
+  }, [sdk]);
+
   async function searchPlaylists(query: string) {
     if (query) {
       const playLists = await sdk?.search(query, ["playlist"]);
       setQueryResult(playLists);
     }
+  }
+
+  if (!sdk) {
+    return <div>Loading...</div>;
   }
 
   return (
