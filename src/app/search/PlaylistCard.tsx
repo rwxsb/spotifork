@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import forkSvg from "./../../../public/git-fork.svg";
 import { useSpotify } from "../hooks/useSpotify";
+import { Icon } from "@iconify/react";
 
 interface PlaylistCardProps {
   userId: string;
@@ -24,12 +24,11 @@ export const PlaylistCard = (props: PlaylistCardProps) => {
   ]);
 
   async function forkPlaylist(props: PlaylistCardProps) {
-    console.log(props);
     !sdk ?? console.error("sdk does not exists");
     const tracks = await sdk?.playlists.getPlaylistItems(props.playListId);
     const trackUris = tracks?.items.map((item) => item.track.uri);
     const createdPlaylist = await sdk?.playlists.createPlaylist(props.userId, {
-      name: props.name,
+      name: props.name + " | forked from " + props.author,
       description: props.description,
     });
 
@@ -38,18 +37,18 @@ export const PlaylistCard = (props: PlaylistCardProps) => {
 
   return (
     <div className={`${styles.playListCard}`}>
-      <Image src={props.href} alt="" width={100} height={100} />
       <div>
-        <div>{props.name}</div>
-        <div>{props.description}</div>
-        <div>{props.author}</div>
+        <Image src={props.href} alt="" width={100} height={100} />
       </div>
-      <Image
-        src={forkSvg}
-        className={`${styles.forkButton}`}
-        onClick={() => forkPlaylist(props)}
-        alt="fork button"
-      />
+      <div>
+        <div>
+          <h3 className={`${styles.playListTitle}`}>{props.name}</h3>
+          {" by "}
+          <p className={`${styles.playListAuthor}`}>{props.author}</p>
+        </div>
+        <div>{props.description}</div>
+      </div>
+      <Icon icon="fa:code-fork" onClick={() => forkPlaylist(props)} />
     </div>
   );
 };
