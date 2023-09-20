@@ -1,6 +1,5 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useSpotify } from "../hooks/useSpotify";
 import { Icon } from "@iconify/react";
 
 interface PlaylistCardProps {

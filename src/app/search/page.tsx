@@ -1,47 +1,30 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSpotify } from "./../hooks/useSpotify";
-import { UserProfile, PartialSearchResult } from "@spotify/web-api-ts-sdk";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  UserProfile,
+  PartialSearchResult,
+  SpotifyApi,
+} from "@spotify/web-api-ts-sdk";
 import { PlaylistCard } from "./PlaylistCard";
 import styles from "./page.module.css";
 import { Icon } from "@iconify/react";
+import { useSelector } from "react-redux";
+import { IAppState } from "../constants/state";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
-const redirectUrl = "http://localhost:3000/search";
 
 export default function Playlists() {
-  const router = useRouter();
-  //To distribute the sdk we should use Redux or Other Context API
-  const sdk = useSpotify(clientId, redirectUrl, [
-    "playlist-read-private",
-    "playlist-read-collaborative",
-    "playlist-modify-private",
-    "playlist-modify-public",
-  ]);
+  const authState = useSelector((state: IAppState) => state.auth);
+  console.log(authState);
+  const sdk = SpotifyApi.withAccessToken(clientId, authState.token);
+
   const [queryResult, setQueryResult] =
     useState<Pick<PartialSearchResult, "playlists">>();
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
 
   async function logOut() {
-    router.push("/");
     sdk?.logOut();
   }
-
-  useEffect(() => {
-    async function getCurrentUser() {
-      console.log(sdk);
-      const currentUser =
-        (await sdk?.currentUser.profile()) || ({} as UserProfile);
-      setProfile(currentUser);
-    }
-
-    if (sdk) {
-      getCurrentUser();
-    } else {
-      console.error("SDK is not initialized");
-    }
-  }, [sdk]);
 
   async function searchPlaylists(query: string) {
     if (query) {
@@ -50,9 +33,11 @@ export default function Playlists() {
     }
   }
 
-  if (!sdk) {
-    return <div>Loading...</div>;
-  }
+  sdk.currentUser.profile().then((res) => setProfile(res));
+
+  // if (authState.token) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className={`${styles.pageWrapper}`}>
