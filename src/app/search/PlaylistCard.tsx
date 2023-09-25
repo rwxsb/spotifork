@@ -1,6 +1,9 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { Icon } from "@iconify/react";
+import { useSelector } from "react-redux";
+import { IAppState } from "../constants/state";
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 interface PlaylistCardProps {
   userId: string;
@@ -12,15 +15,10 @@ interface PlaylistCardProps {
 }
 
 const clientId = "7de5348da8994d779c49e165017c1083";
-const redirectUrl = "http://localhost:3000/search";
 
 export const PlaylistCard = (props: PlaylistCardProps) => {
-  const sdk = useSpotify(clientId, redirectUrl, [
-    "playlist-read-private",
-    "playlist-read-collaborative",
-    "playlist-modify-private",
-    "playlist-modify-public",
-  ]);
+  const tokenState = useSelector((state: IAppState) => state.token);
+  const sdk = SpotifyApi.withAccessToken(clientId, tokenState.token);
 
   async function forkPlaylist(props: PlaylistCardProps) {
     !sdk ?? console.error("sdk does not exists");

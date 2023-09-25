@@ -16,10 +16,10 @@ export const authEpic = (action$: Observable<Action>) =>
   action$.pipe(
     ofType(AuthActionTypes.AUTH_INIT),
     switchMap((action: ActionType<AuthActionTypes.AUTH_INIT, authRequest>) => {
-      const accessToken$: Observable<AccessToken> = from(
+      const accessToken$: Observable<void> = from(
         authWithSpotify(action.payload),
       );
 
-      return accessToken$.pipe(map(onAuthSuccess), catchError(onAuthFailure));
+      return accessToken$.pipe(map(onAuthSuccess));
     }),
   );

@@ -8,9 +8,8 @@ export enum AuthActionTypes {
   AUTH_FAILED = "AUTH_FAILED",
 }
 
-export const onAuthSuccess = (result: AccessToken) => ({
+export const onAuthSuccess = () => ({
   type: AuthActionTypes.AUTH_SUCCEEDED,
-  payload: result,
 });
 
 export const onAuthFailure = (error: any) => {

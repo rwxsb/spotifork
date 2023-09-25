@@ -3,13 +3,11 @@ import { AuthActionTypes } from "../actions/authActions";
 import { IAuthAction } from "@/app/constants/state";
 
 export interface IAuthState {
-  token: AccessToken;
   isLoading: boolean;
   error: any;
 }
 
 const initialState: IAuthState = {
-  token: emptyAccessToken,
   isLoading: false,
   error: null,
 };
@@ -26,10 +24,8 @@ export const authReducer = (
       };
 
     case AuthActionTypes.AUTH_SUCCEEDED:
-      console.log(action.payload);
       return {
         ...state,
-        token: action.payload,
         isLoading: false,
       };
     case AuthActionTypes.AUTH_FAILED:

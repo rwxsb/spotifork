@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   UserProfile,
   PartialSearchResult,
@@ -14,13 +14,16 @@ import { IAppState } from "../constants/state";
 const clientId = "7de5348da8994d779c49e165017c1083";
 
 export default function Playlists() {
-  const authState = useSelector((state: IAppState) => state.auth);
-  console.log(authState);
-  const sdk = SpotifyApi.withAccessToken(clientId, authState.token);
+  const tokenState = useSelector((state: IAppState) => state.token);
+  const sdk = SpotifyApi.withAccessToken(clientId, tokenState.token);
 
   const [queryResult, setQueryResult] =
     useState<Pick<PartialSearchResult, "playlists">>();
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
+
+  useEffect(() => {
+    sdk.currentUser.profile().then((res) => setProfile(res));
+  }, []);
 
   async function logOut() {
     sdk?.logOut();
@@ -32,8 +35,6 @@ export default function Playlists() {
       setQueryResult(playLists);
     }
   }
-
-  sdk.currentUser.profile().then((res) => setProfile(res));
 
   // if (authState.token) {
   //   return <div>Loading...</div>;
