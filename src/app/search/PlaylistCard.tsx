@@ -4,6 +4,8 @@ import { Icon } from "@iconify/react";
 import { useSelector } from "react-redux";
 import { IAppState } from "../constants/state";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { useSpotify } from "../hooks/useSpotify";
+import { useRouter } from "next/navigation";
 
 interface PlaylistCardProps {
   userId: string;
@@ -17,8 +19,8 @@ interface PlaylistCardProps {
 const clientId = "7de5348da8994d779c49e165017c1083";
 
 export const PlaylistCard = (props: PlaylistCardProps) => {
-  const tokenState = useSelector((state: IAppState) => state.token);
-  const sdk = SpotifyApi.withAccessToken(clientId, tokenState.token);
+  const router = useRouter();
+  const sdk = useSpotify();
 
   async function forkPlaylist(props: PlaylistCardProps) {
     !sdk ?? console.error("sdk does not exists");
@@ -37,15 +39,28 @@ export const PlaylistCard = (props: PlaylistCardProps) => {
       <div>
         <Image src={props.href} alt="" width={100} height={100} />
       </div>
-      <div>
+      <div className={`${styles.centerColumn}`}>
         <div>
           <h3 className={`${styles.playListTitle}`}>{props.name}</h3>
           {" by "}
           <p className={`${styles.playListAuthor}`}>{props.author}</p>
         </div>
-        <div>{props.description}</div>
+        <div dangerouslySetInnerHTML={{ __html: props.description }} />
       </div>
-      <Icon icon="fa:code-fork" onClick={() => forkPlaylist(props)} />
+      <div className={`${styles.actionBar}`}>
+        <Icon
+          icon="fa:code-fork"
+          onClick={() => forkPlaylist(props)}
+          className={`${styles.actionBarItem}`}
+        />
+        <Icon
+          onClick={() => router.push(`/${props.playListId}`)}
+          icon="ep:arrow-right"
+          height={"70px"}
+          className={`${styles.actionBarItem}`}
+        />
+      </div>
+      <div></div>
     </div>
   );
 };

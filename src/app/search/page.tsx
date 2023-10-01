@@ -10,23 +10,30 @@ import styles from "./page.module.css";
 import { Icon } from "@iconify/react";
 import { useSelector } from "react-redux";
 import { IAppState } from "../constants/state";
+import { useRouter } from "next/navigation";
+import { authUser } from "../state/actions/authActions";
+import { useSpotify } from "../hooks/useSpotify";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 
 export default function Playlists() {
-  const tokenState = useSelector((state: IAppState) => state.token);
-  const sdk = SpotifyApi.withAccessToken(clientId, tokenState.token);
+  const router = useRouter();
+  const sdk = useSpotify();
 
   const [queryResult, setQueryResult] =
     useState<Pick<PartialSearchResult, "playlists">>();
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
 
   useEffect(() => {
-    sdk.currentUser.profile().then((res) => setProfile(res));
-  }, []);
+    if (sdk) {
+      sdk.currentUser.profile().then((res) => setProfile(res));
+    }
+  }, [sdk]);
 
   async function logOut() {
     sdk?.logOut();
+    localStorage.removeItem("code_verifier");
+    router.push("/");
   }
 
   async function searchPlaylists(query: string) {
@@ -36,9 +43,11 @@ export default function Playlists() {
     }
   }
 
-  // if (authState.token) {
-  //   return <div>Loading...</div>;
-  // }
+  console.log(sdk);
+
+  if (!sdk) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={`${styles.pageWrapper}`}>

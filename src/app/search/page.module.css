@@ -10,10 +10,10 @@
   border-radius: 10px;
   border: 1px solid;
   border-color: black;
-  padding: 1em;
+  padding: 1em 0 1em 1em;
   margin: 1em 3em;
   display: grid;
-  grid-template-columns: 100px 6fr 10px;
+  grid-template-columns: 100px 6fr auto;
   gap: 10px;
 }
 
@@ -25,6 +25,10 @@
   padding: 5px;
 }
 
+.actionBarItem {
+  align-self: center;
+}
+
 .pageWrapper {
   margin: auto auto;
 }
@@ -34,6 +38,13 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
+}
+
+.actionBar {
+  display: flex;
+  min-width: 50px;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .searchBar {

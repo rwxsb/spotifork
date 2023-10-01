@@ -1,13 +1,6 @@
 "use client";
 import { authRequest } from "types";
-import {
-  AccessToken,
-  SpotifyApi,
-  emptyAccessToken,
-} from "@spotify/web-api-ts-sdk";
-import { getSpotifySdk } from "./helpers/getSpotifySdk";
-import { Router, useRouter } from "next/router";
-import { redirect } from "next/dist/server/api-utils";
+import { AccessToken } from "@spotify/web-api-ts-sdk";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 const clientSecret = "f132a6037a8b4a4191a16d48dc5de0d8";
@@ -46,8 +39,6 @@ export const exchangeCodeForToken = async (
   code: string,
 ): Promise<AccessToken> => {
   let codeVerifier = localStorage.getItem("code_verifier");
-  console.log(codeVerifier);
-  console.log("code " + code);
 
   let body = new URLSearchParams({
     grant_type: "authorization_code",

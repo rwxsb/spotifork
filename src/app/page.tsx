@@ -2,9 +2,11 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import spotifyImage from "./../../public/spotify.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authUser } from "./state/actions/authActions";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { IAppState } from "./constants/state";
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 const redirectUrl = "http://localhost:3000/search";
@@ -17,10 +19,15 @@ const scopes = [
 
 export default function Home() {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const token = useSelector((state: IAppState) => state.token.token);
 
   function loginAndRedirect() {
-    dispatch(authUser({ clientId, redirectUrl, scopes }));
+    console.log(JSON.stringify(token));
+    if (token) {
+      redirect("/search");
+    } else {
+      dispatch(authUser({ clientId, redirectUrl, scopes }));
+    }
   }
 
   return (
