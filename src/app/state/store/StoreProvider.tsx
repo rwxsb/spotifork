@@ -13,7 +13,7 @@ export default function StoreProvider({
   const persistor = persistStore(store);
   return (
     <Provider store={store}>
-      <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+      <PersistGate loading={null} persistor={persistor}>
         {children}
       </PersistGate>
     </Provider>

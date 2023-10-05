@@ -7,6 +7,7 @@ import { authUser } from "./state/actions/authActions";
 import { IAppState } from "./constants/state";
 import { useRouter } from "next/navigation";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { hasTokenExpired } from "./hooks/useSpotify";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 const redirectUrl = "http://localhost:3000/search";
@@ -23,8 +24,7 @@ export default function Home() {
   const router = useRouter();
 
   function loginAndRedirect() {
-    console.log(JSON.stringify(token));
-    if (token.expires !== -1) {
+    if (!hasTokenExpired(token)) {
       router.push("/search");
     } else {
       dispatch(authUser({ clientId, redirectUrl, scopes }));

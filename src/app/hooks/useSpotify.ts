@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IAppState } from "../constants/state";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { AccessToken, SpotifyApi } from "@spotify/web-api-ts-sdk";
 import { authUser } from "../state/actions/authActions";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
@@ -19,8 +19,7 @@ export function useSpotify() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (token.token.expires === -1) {
-      console.log("sdk" + token.token);
+    if (hasTokenExpired(token.token)) {
       dispatch(authUser({ clientId, redirectUrl, scopes }));
       let sdk = SpotifyApi.withAccessToken(clientId, token.token);
       setSdk(sdk);
@@ -31,4 +30,8 @@ export function useSpotify() {
   }, [dispatch, token]);
 
   return sdk;
+}
+
+export function hasTokenExpired(token: AccessToken) {
+  return token.expires < new Date().getTime();
 }
