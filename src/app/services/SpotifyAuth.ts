@@ -39,6 +39,7 @@ export const exchangeCodeForToken = async (
   code: string,
 ): Promise<AccessToken> => {
   let codeVerifier = localStorage.getItem("code_verifier");
+  console.log(code);
 
   let body = new URLSearchParams({
     grant_type: "authorization_code",

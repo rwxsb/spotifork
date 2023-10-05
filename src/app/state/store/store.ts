@@ -13,8 +13,15 @@ import { tokenReducer } from "../reducers/tokenReducer";
 import { tokenEpic } from "../epics/tokenEpic";
 import { redirectOnLoginSuccessEpic } from "../epics/redirectEpic";
 import { redirectReducer } from "../reducers/redirectReducer";
+import { createLogger } from "redux-logger";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 export const createStore = () => {
+  const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : compose;
+
   const rootReducer = combineReducers<IAppState>({
     auth: authReducer,
     token: tokenReducer,
@@ -27,12 +34,23 @@ export const createStore = () => {
     redirectOnLoginSuccessEpic,
   );
 
+  const persistConfig = {
+    key: "root",
+    storage,
+  };
+  const persistedReducer = persistReducer(persistConfig, rootReducer);
+
   const epicMiddleware = createEpicMiddleware<Action, Action, IAppState>();
+
+  const middlewares =
+    process.env.NODE_ENV === "production"
+      ? [epicMiddleware]
+      : [epicMiddleware, createLogger()];
 
   //TODO: maybe use configure store in future
   const store = createReduxStore(
-    rootReducer,
-    compose(applyMiddleware(epicMiddleware)),
+    persistedReducer,
+    composeEnhancers(applyMiddleware(...middlewares)),
   );
 
   epicMiddleware.run(rootEpic);

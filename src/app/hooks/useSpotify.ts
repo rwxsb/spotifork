@@ -19,7 +19,8 @@ export function useSpotify() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!token.token) {
+    if (token.token.expires === -1) {
+      console.log("sdk" + token.token);
       dispatch(authUser({ clientId, redirectUrl, scopes }));
       let sdk = SpotifyApi.withAccessToken(clientId, token.token);
       setSdk(sdk);

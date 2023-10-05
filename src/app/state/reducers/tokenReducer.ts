@@ -9,7 +9,7 @@ export interface ITokenState {
 }
 
 const initialState: ITokenState = {
-  token: null,
+  token: emptyAccessToken,
   isLoading: false,
   error: null,
 };
