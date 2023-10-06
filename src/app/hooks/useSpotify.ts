@@ -23,15 +23,33 @@ export function useSpotify() {
       dispatch(authUser({ clientId, redirectUrl, scopes }));
       let sdk = SpotifyApi.withAccessToken(clientId, token.token);
       setSdk(sdk);
-    } else {
+    } else if (!hasTokenExpired(token.token)) {
       let sdk = SpotifyApi.withAccessToken(clientId, token?.token);
       setSdk(sdk);
     }
   }, [dispatch, token]);
+
+  if (!isAuthenticatedSdk(sdk)) {
+    return null;
+  }
 
   return sdk;
 }
 
 export function hasTokenExpired(token: AccessToken) {
   return token.expires < new Date().getTime();
+}
+
+export function isAuthenticatedSdk(sdk: SpotifyApi) {
+  if (!sdk) {
+    return false;
+  }
+
+  return sdk.getAccessToken().then((res) => {
+    if (res) {
+      return true;
+    }
+
+    return false;
+  });
 }

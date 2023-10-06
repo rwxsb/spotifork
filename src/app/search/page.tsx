@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { IAppState } from "../constants/state";
 import { useRouter } from "next/navigation";
 import { authUser } from "../state/actions/authActions";
-import { useSpotify } from "../hooks/useSpotify";
+import { isAuthenticatedSdk, useSpotify } from "../hooks/useSpotify";
 
 const clientId = "7de5348da8994d779c49e165017c1083";
 
@@ -43,14 +43,12 @@ export default function Playlists() {
     }
   }
 
-  console.log(sdk);
+  function getPageContent() {
+    if (!sdk) {
+      return <div>Loading...</div>;
+    }
 
-  if (!sdk) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className={`${styles.pageWrapper}`}>
+    return (
       <div className={`${styles.searchContainer}`}>
         <div className={`${styles.topBar}`}>
           <button onClick={logOut}>{profile?.id}</button>
@@ -73,6 +71,8 @@ export default function Playlists() {
           />
         ))}
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <div className={`${styles.pageWrapper}`}>{getPageContent()}</div>;
 }
