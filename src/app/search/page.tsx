@@ -1,75 +1,80 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEventHandler, ChangeEvent } from "react";
 import {
   UserProfile,
   PartialSearchResult,
   SpotifyApi,
+  SimplifiedPlaylist,
+  Playlist,
+  AccessToken,
 } from "@spotify/web-api-ts-sdk";
 import { PlaylistCard } from "./PlaylistCard";
 import styles from "./page.module.css";
 import { Icon } from "@iconify/react";
-import { useSelector } from "react-redux";
-import { IAppState } from "../constants/state";
-import { useRouter } from "next/navigation";
-import { authUser } from "../state/actions/authActions";
-import { isAuthenticatedSdk, useSpotify } from "../hooks/useSpotify";
-
-const clientId = "7de5348da8994d779c49e165017c1083";
+import { createClient } from "@/utils/supabase/component";
+import { Session, SupabaseClient } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
+import { useSpotifyClient } from "../hooks/useSpotifyClient";
 
 export default function Playlists() {
-  const router = useRouter();
-  const sdk = useSpotify();
+  const { supabase, sdk, session, loading, error } = useSpotifyClient();
+  const [profile, setProfile] = useState<UserProfile>();
+  const [followed, setFollowed] = useState<SimplifiedPlaylist[]>(null);
+  const [queryResult, setQueryResult] = useState<SimplifiedPlaylist[]>(null);
 
-  const [queryResult, setQueryResult] =
-    useState<Pick<PartialSearchResult, "playlists">>();
-  const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
+  console.log(session);
 
-  useEffect(() => {
-    if (sdk) {
-      sdk.currentUser.profile().then((res) => setProfile(res));
-    }
-  }, [sdk]);
+  if (sdk) {
+    !followed &&
+      sdk.currentUser.playlists
+        .playlists()
+        .then((res) => setFollowed(res.items));
 
-  async function logOut() {
-    sdk?.logOut();
-    localStorage.removeItem("code_verifier");
-    router.push("/");
+    !profile && sdk.currentUser.profile().then((res) => setProfile(res));
   }
 
-  async function searchPlaylists(query: string) {
-    if (query) {
-      const playLists = await sdk?.search(query, ["playlist"]);
-      setQueryResult(playLists);
-    }
+  const searchPlaylists = (e: ChangeEvent<HTMLInputElement>) => {
+    e.target.value !== ""
+      ? sdk
+          .search(e.target.value, ["playlist"])
+          .then((res) =>
+            setQueryResult(res.playlists.items as SimplifiedPlaylist[]),
+          )
+      : setQueryResult(followed);
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    redirect("/");
   }
 
   function getPageContent() {
-    if (!sdk) {
-      return <div>Loading...</div>;
-    }
-
     return (
       <div className={`${styles.searchContainer}`}>
         <div className={`${styles.topBar}`}>
-          <button onClick={logOut}>{profile?.id}</button>
+          <button>{profile?.id}</button>
           <input
             className={`${styles.searchBar}`}
+            onChange={searchPlaylists}
             type="text"
-            onChange={(e) => searchPlaylists(e.currentTarget.value)}
           />
-          <Icon icon="mdi:logout" onClick={logOut} />
         </div>
-        {queryResult?.playlists?.items.map((item, index) => (
-          <PlaylistCard
-            key={index}
-            playListId={item.id}
-            name={item.name}
-            href={item.images[0].url}
-            description={item.description}
-            author={item.owner.display_name}
-            userId={profile.id}
-          />
-        ))}
+        {(queryResult ?? followed)
+          ?.filter((item) => !!item)
+          ?.map((item, index) => (
+            <PlaylistCard
+              key={index}
+              playListId={item.id}
+              name={item.name}
+              href={item.images[0].url}
+              description={item.description}
+              author={item.owner.display_name}
+              userId={profile.id}
+            />
+          ))}
       </div>
     );
   }
