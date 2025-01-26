@@ -12,7 +12,7 @@
     "@spotify/web-api-ts-sdk": "^1.1.2",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
-    "@types/node": "20.6.0",
+    "@types/node": "20.17.16",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "bufferutil": "^4.0.8",
